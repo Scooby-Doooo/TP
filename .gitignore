@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.egg-info/
+dist/
+build/
+.coverage
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.vsix
+node_modules/
