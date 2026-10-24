@@ -1,0 +1,61 @@
+// SIPL: machine-readable grammar (comments name the matching BNF rule).
+// Parsed with LALR(1) and a contextual lexer, so "X -1" is a subtraction
+// while "X := -1" is a negative number.
+
+program: _BEGIN seq _END                       // P1
+
+?seq: stmt
+    | stmt (_SEMI stmt)+            -> seq     // S2
+
+?stmt: NAME _ASSIGN aexp            -> assign  // S1
+     | _IF bexp _THEN stmt _ELSE stmt -> if_   // S3
+     | _WHILE bexp _DO stmt         -> while_  // S4
+     | _BEGIN seq _END              -> block   // S5
+     | _SKIP                        -> skip    // S6
+
+?aexp: term
+     | aexp PLUS term               -> binary  // A3
+     | aexp MINUS term              -> binary  // A4
+
+?term: atom
+     | term TIMES atom              -> binary  // A5
+
+?atom: NUMBER                       -> number  // A1
+     | NAME                         -> var     // A2
+     | _LPAR aexp _RPAR                        // A6
+
+?bexp: bterm
+     | bexp (_OR | _OR_WORD) bterm  -> or_     // B3
+
+?bterm: aexp EQ aexp                -> compare // B1
+      | aexp GT aexp                -> compare // B2
+      | (_NOT | _NOT_WORD) bterm    -> not_    // B4
+      | _LPAR bexp _RPAR                       // B5
+
+_BEGIN: "begin"
+_END: "end"
+_IF: "if"
+_THEN: "then"
+_ELSE: "else"
+_WHILE: "while"
+_DO: "do"
+_SKIP: "skip"
+_OR: "∨"
+_OR_WORD: "or"
+_NOT: "¬"
+_NOT_WORD: "not"
+_ASSIGN: ":="
+_SEMI: ";"
+_LPAR: "("
+_RPAR: ")"
+PLUS: "+"
+MINUS: "-"
+TIMES: "*"
+EQ: "="
+GT: ">"
+NUMBER: /-?[0-9]+/
+// Keywords are excluded here: the contextual lexer would otherwise take "end" for
+// a variable wherever the keyword itself is not expected.
+NAME: /(?!(?:begin|end|if|then|else|while|do|skip|or|not)\b)[A-Za-z_][A-Za-z0-9_]*/
+
+%ignore /\s+/

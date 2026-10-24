@@ -1,0 +1,4 @@
+begin
+ if X > 0 then
+  R := 1
+end

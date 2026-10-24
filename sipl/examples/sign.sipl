@@ -1,0 +1,9 @@
+begin
+ if X > 0 or X = 0 then
+  begin
+   if X = 0 then S := 0 else S := 1
+  end
+ else
+  S := -1;
+ skip
+end
