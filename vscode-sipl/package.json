@@ -1,0 +1,61 @@
+{
+  "name": "vscode-sipl",
+  "displayName": "SIPL Debugger",
+  "description": "Debugging of SIPL programs in VS Code (client of the Python package sipl)",
+  "version": "0.1.0",
+  "publisher": "sipl-course",
+  "license": "MIT",
+  "engines": { "vscode": "^1.80.0" },
+  "categories": ["Debuggers"],
+  "main": "./extension.js",
+  "activationEvents": ["onDebugResolve:sipl", "onDebugDynamicConfigurations:sipl"],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false,
+      "description": "The debugger starts the Python interpreter named in the settings."
+    }
+  },
+  "contributes": {
+    "languages": [
+      { "id": "sipl", "aliases": ["SIPL"], "extensions": [".sipl"] }
+    ],
+    "breakpoints": [{ "language": "sipl" }],
+    "configuration": {
+      "title": "SIPL",
+      "properties": {
+        "sipl.pythonPath": {
+          "type": "string",
+          "default": "python",
+          "description": "Python interpreter that has the sipl package installed."
+        }
+      }
+    },
+    "debuggers": [
+      {
+        "type": "sipl",
+        "label": "SIPL",
+        "languages": ["sipl"],
+        "configurationAttributes": {
+          "launch": {
+            "required": ["program"],
+            "properties": {
+              "program": { "type": "string", "description": "Path to the .sipl file.", "default": "${file}" },
+              "input": { "type": "string", "description": "Initial state, for example \"X=2 Y=10\". Asked for at start if omitted." },
+              "maxSteps": { "type": "integer", "description": "Execution step limit.", "default": 100000 },
+              "stopOnEntry": { "type": "boolean", "description": "Stop at the first statement.", "default": false }
+            }
+          }
+        },
+        "initialConfigurations": [
+          { "type": "sipl", "request": "launch", "name": "Debug SIPL", "program": "${file}" }
+        ],
+        "configurationSnippets": [
+          {
+            "label": "SIPL: Debug",
+            "body": { "type": "sipl", "request": "launch", "name": "Debug SIPL", "program": "^\"\\${file}\"", "input": "X=2 Y=10" }
+          }
+        ]
+      }
+    ]
+  }
+}
