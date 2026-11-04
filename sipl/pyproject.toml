@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "sipl"
+name = "pysipl"
 dynamic = ["version"]
 description = "Parser, interpreter, trace and debug adapter for the SIPL teaching language"
 license = "MIT"
