@@ -1,0 +1,77 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check that versions match the tag
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          grep -qx "__version__ = \"$version\"" sipl/src/sipl/__init__.py
+          test "$(node -p "require('./vscode-sipl/package.json').version")" = "$version"
+          grep -q "^## \[$version\]" CHANGELOG.md
+      - name: Test
+        working-directory: sipl
+        run: |
+          pip install -e ".[dev]"
+          pytest
+      - name: Build the Python package
+        working-directory: sipl
+        run: python -m build --outdir ../dist
+      - name: Build the extension
+        working-directory: vscode-sipl
+        run: npx --yes @vscode/vsce@3 package --no-dependencies --allow-missing-repository --skip-license
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-package
+          path: dist/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: extension
+          path: vscode-sipl/*.vsix
+
+  pypi:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: python-package
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    needs: pypi
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+      - name: Create the release from the CHANGELOG section
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v v="## [$version]" 'index($0, v) == 1 {on=1; next} /^## \[/ {on=0} on' CHANGELOG.md > notes.md
+          gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file notes.md \
+            artifacts/python-package/* artifacts/extension/*
