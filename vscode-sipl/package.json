@@ -1,12 +1,12 @@
 {
   "name": "vscode-sipl",
-  "displayName": "SIPL Debugger",
-  "description": "Debugging of SIPL programs in VS Code (client of the Python package sipl)",
+  "displayName": "SIPL",
+  "description": "Syntax highlighting, snippets and debugging of SIPL programs (client of the Python package sipl)",
   "version": "0.1.0",
   "publisher": "sipl-course",
   "license": "MIT",
   "engines": { "vscode": "^1.80.0" },
-  "categories": ["Debuggers"],
+  "categories": ["Programming Languages", "Snippets", "Debuggers"],
   "main": "./extension.js",
   "activationEvents": ["onDebugResolve:sipl", "onDebugDynamicConfigurations:sipl"],
   "capabilities": {
@@ -17,7 +17,18 @@
   },
   "contributes": {
     "languages": [
-      { "id": "sipl", "aliases": ["SIPL"], "extensions": [".sipl"] }
+      {
+        "id": "sipl",
+        "aliases": ["SIPL"],
+        "extensions": [".sipl"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      { "language": "sipl", "scopeName": "source.sipl", "path": "./syntaxes/sipl.tmLanguage.json" }
+    ],
+    "snippets": [
+      { "language": "sipl", "path": "./snippets/sipl.json" }
     ],
     "breakpoints": [{ "language": "sipl" }],
     "configuration": {

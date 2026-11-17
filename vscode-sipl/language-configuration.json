@@ -1,0 +1,13 @@
+{
+  "brackets": [["(", ")"]],
+  "autoClosingPairs": [{ "open": "(", "close": ")" }],
+  "surroundingPairs": [["(", ")"]],
+  "folding": {
+    "markers": { "start": "^\\s*begin\\b", "end": "^\\s*end\\b" }
+  },
+  "indentationRules": {
+    "increaseIndentPattern": "^.*\\b(begin|do|then|else)\\s*$",
+    "decreaseIndentPattern": "^\\s*end\\b"
+  },
+  "wordPattern": "[A-Za-z_][A-Za-z0-9_]*|-?[0-9]+"
+}

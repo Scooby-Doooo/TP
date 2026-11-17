@@ -2,11 +2,11 @@
 
 [![CI](https://github.com/Scooby-Doooo/TP/actions/workflows/ci.yml/badge.svg)](https://github.com/Scooby-Doooo/TP/actions/workflows/ci.yml)
 
-Проєктна робота з теорії програмування: парсер, інтерпретатор, CLI та дебагер для мови SIPL.
+Проєктна робота з теорії програмування: парсер, інтерпретатор, CLI, дебагер і розширення VS Code для мови SIPL.
 
 ## Обрані завдання
 
-Трек «Interpreter + Debugger», заявлено 10 балів.
+Трек «Interpreter + Debugger» (10 балів) і два додаткові завдання з треку VS Code, разом 11,5 бала.
 
 | ID | Завдання | Бали | Файли |
 | -- | -------- | ---- | ----- |
@@ -19,6 +19,8 @@
 | REL-01 | CI | 0,5 | `.github/workflows/ci.yml` |
 | REL-02 | Releases, SemVer, CHANGELOG | 0,5 | `.github/workflows/release.yml`, `CHANGELOG.md` |
 | REL-03 | Публікація в PyPI | 0,5 | `.github/workflows/release.yml` |
+| IDE-01 | Підсвітка, дужки, відступи, сніпети | 1 | `vscode-sipl/syntaxes/`, `language-configuration.json`, `snippets/` |
+| REL-04 | Публікація розширення (.vsix) | 0,5 | `.github/workflows/release.yml`, розділ «Розширення VS Code» |
 
 ## Встановлення і запуск
 
@@ -161,15 +163,28 @@ Finished          state, steps          програма завершилась
 
 `statement` набуває значень `assign`, `if`, `while`, `block`, `skip`. Послідовність `S1; S2` окремих подій не дає. З Python ті самі події повертає `sipl.interpreter.execute(program, state)`.
 
-## Налагодження у VS Code
+## Розширення VS Code
 
-Для збірки розширення потрібен Node.js:
+![Налагодження SIPL у VS Code](docs/debugger.png)
+
+Сумісність: VS Code 1.80 або новіший, Python 3.10 або новіший з установленим пакетом `pysipl`. Перевірено на Windows; розширення написане на JavaScript без нативних залежностей.
+
+Готовий `vscode-sipl-X.Y.Z.vsix` лежить в артефактах [GitHub Release](https://github.com/Scooby-Doooo/TP/releases/latest):
+
+```bash
+code --install-extension vscode-sipl-0.1.0.vsix
+```
+
+Щоб зібрати його самому, потрібен Node.js:
 
 ```bash
 cd vscode-sipl
 npx --yes @vscode/vsce@3 package --no-dependencies --allow-missing-repository --skip-license
-code --install-extension vscode-sipl-0.1.0.vsix
 ```
+
+Розширення підсвічує ключові слова, змінні, числа й оператори, підсвічує парні дужки, додає відступ після `begin`, `do`, `then`, `else` і прибирає його перед `end`, згортає блоки `begin ... end`. Сніпети: `program`, `begin`, `while`, `if`, `assign`. Коментарів у SIPL немає, тому й команди коментування теж немає.
+
+### Налагодження
 
 У налаштуваннях VS Code треба вказати `sipl.pythonPath`: абсолютний шлях до Python, де встановлено `sipl`, наприклад `C:\path\to\TP\sipl\.venv\Scripts\python.exe`.
 
